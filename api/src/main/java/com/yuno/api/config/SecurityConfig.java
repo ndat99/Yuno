@@ -11,6 +11,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import com.yuno.api.security.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -28,7 +29,8 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) //tắt CFRS (vì dùng API chứ ko dùng form web)
             .authorizeHttpRequests(auth -> auth
             .requestMatchers("/api/auth/**").permitAll() //rule 1: cho phép TẤT CẢ yêu cầu đến /api/auth/** (bao gồm register)
-            .anyRequest().authenticated() //rule 2: mọi yêu cầu khác đều phải xác thực (đăng nhập)
+            .requestMatchers(HttpMethod.GET, "/api/posts").permitAll() //rule 2: cho phép gọi GET đến /api/posts
+            .anyRequest().authenticated() //rule 3: mọi yêu cầu khác đều phải xác thực (đăng nhập)
         );
         return http.build();
     }
