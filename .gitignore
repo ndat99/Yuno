@@ -1,0 +1,9 @@
+# Bỏ qua file rác của Java (Back-end)
+/api/target/
+/api/.mvn/
+/api/*.log
+
+# Bỏ qua file rác của React (Front-end)
+/yuno-ui/node_modules/
+/yuno-ui/build/
+/yuno-ui/.npm/
