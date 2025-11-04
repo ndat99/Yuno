@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 export function RegisterPage(){
     //tạo 4 state để lưu 4 thông tin từ from
@@ -38,11 +39,16 @@ export function RegisterPage(){
         }
     };
     return(
-        <div>
-            <h2>Tạo tài khoản Yuno ngay!</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Username:</label>
+        // Thêm className cho container
+        <div className="auth-container">
+            <form className="auth-form" onSubmit={handleSubmit}>
+                <h2>Tạo tài khoản Yuno</h2>
+                <div className="form-group">
+                    <label>Tên hiển thị</label>
+                    <input type="text" value={name} onChange={(e) => setName(e.target.value)}/>
+                </div>
+                <div className="form-group">
+                    <label>Tên đăng nhập</label>
                     <input 
                         type="text"
                         value={username} //(one-way-binding) đây là cái giá trị username ở useState trên kia
@@ -50,20 +56,22 @@ export function RegisterPage(){
                     //   khi gõ phím      đặt cái      ký tự vừa gõ     vào username  (two-way-binding)
                     />
                 </div>
-                <div>
-                    <label>Password:</label>
-                    <input type="text" value={password} onChange={(e) => setPassword(e.target.value)}/>
+                <div className="form-group">
+                    <label>Mật khẩu</label>
+                    {/* Sửa type="text" -> "password" cho an toàn */}
+                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
                 </div>
-                <div>
-                    <label>Name:</label>
-                    <input type="text" value={name} onChange={(e) => setName(e.target.value)}/>
+                <div className="form-group">
+                    <label>Địa chỉ Email</label>
+                    {/* Sửa type="text" -> "email" cho đúng ngữ nghĩa */}
+                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
                 </div>
-                <div>
-                    <label>Email:</label>
-                    <input type="text" value={email} onChange={(e) => setEmail(e.target.value)}/>
-                </div>
-                <button type='submit'>Đăng ký</button>
+                <button type='submit' className="auth-button">Đăng ký</button>
             </form>
+            {/* Thêm className cho link chuyển đổi */}
+            <p className="auth-switch-link">
+                Đã có tài khoản? <Link to="/login">Đăng nhập ngay</Link>
+            </p>
         </div>
     );
 }

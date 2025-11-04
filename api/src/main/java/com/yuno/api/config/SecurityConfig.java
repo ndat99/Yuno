@@ -35,10 +35,11 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) //tắt CFRS (vì dùng API chứ ko dùng form web)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll() //rule 1: cho phép TẤT CẢ yêu cầu đến /api/auth/** (bao gồm register)
-                .requestMatchers(HttpMethod.GET, "/api/posts").permitAll() //rule 2: cho phép gọi GET đến /api/posts
-                .requestMatchers(HttpMethod.POST, "/api/posts").authenticated() //rule 3: phải có vé mới cho POST posts
-                .anyRequest().authenticated() //rule 4: mọi yêu cầu khác đều phải xác thực (đăng nhập)
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() //rule 1: luôn cho phép "câu hỏi" OPTIONS đi qua
+                .requestMatchers("/api/auth/**").permitAll() //rule 2: cho phép TẤT CẢ yêu cầu đến /api/auth/** (bao gồm register)
+                .requestMatchers(HttpMethod.GET, "/api/posts").permitAll() //rule 3: cho phép gọi GET đến /api/posts
+                .requestMatchers(HttpMethod.POST, "/api/posts").authenticated() //rule 4: phải có vé mới cho POST posts
+                .anyRequest().authenticated() //rule 5: mọi yêu cầu khác đều phải xác thực (đăng nhập)
         )
         .authenticationProvider(authenticationProvider()) //cài hệ thống xác thực vào
         //cài người soát vé Jwt Filter vào dây chuyền vào trước cái Filter mặc định (UsernamePasswordAuthenticationFilter)

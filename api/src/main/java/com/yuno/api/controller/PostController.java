@@ -3,6 +3,7 @@ package com.yuno.api.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.yuno.api.dto.CreatePostRequest;
+import com.yuno.api.dto.PostResponse;
 import com.yuno.api.model.Post;
 import com.yuno.api.service.PostService;
 import java.net.Authenticator;
@@ -27,9 +28,9 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Post>> getAllPosts(){
+    public ResponseEntity<List<PostResponse>> getAllPosts(){
         //gọi service
-        List<Post> posts = postService.getAllPosts();
+        List<PostResponse> posts = postService.getAllPosts();
         //trả về danh sách post
         return ResponseEntity.ok(posts);
     }
