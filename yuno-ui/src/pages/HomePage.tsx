@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { FaRegHeart, FaHeart } from "react-icons/fa";
+
+const Heart = FaHeart as React.ElementType;
+const HeartOutline = FaRegHeart as React.ElementType;
 
 //định nghĩa khuôn Interface cho Post
 interface Post{
@@ -10,14 +14,19 @@ interface Post{
         id: number;
         username: string;
         name: string;
-    } | null
+    } | null;
+    likeCount: number;
 }
 
 export function HomePage() {
     //tạo STATE để lưu ds bài đăng, ban đầu là rỗng []
     const [posts, setPosts] = useState<Post[]>([]);
+    //tạo STATE để lưu nội dung bài đăng mới
     const [content, setContent] =  useState("");
-    
+    //tạo STATE để lưu những bài đã like
+    const [myLikedPosts, setMyLikedPosts] = useState<Set<number>>(new Set());
+
+    //lấy ds post
     const fetchPosts = async () =>{
         try{
             //gọi API công khai (ko cần token)
@@ -29,9 +38,25 @@ export function HomePage() {
         }
     };
 
+    //tra xem đã like post nào
+    const fetchMyLikes = async () =>{
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        try{
+            const response = await axios.get("http://localhost:8080/api/me/likes",
+                { headers: {'Authorization': `Bearer ${token}`}
+            });
+            setMyLikedPosts(new Set(response.data));
+        } catch (error){
+            console.error("Lỗi khi lấy danh sách post đã like: ", error);
+        }
+    }
+
     //code bên trong này sẽ tự động chạy 1 lần ngay sau khi HomePage hiển thị
     useEffect(() => {
         fetchPosts(); //chạy hàm "gọi món"
+        fetchMyLikes(); //chạy hàm "tra cứu like"
     }, []); //Dấu [] nghĩa là chỉ chạy 1 lần lúc tải trang
 
     const handleSubmit = async (event: React.FormEvent) => {
@@ -70,6 +95,27 @@ export function HomePage() {
         }
     }
 
+    const handleLikeToggle = async (postId: number) => {
+        const token = localStorage.getItem("token");
+        if (!token){
+            alert("Bạn phải đăng nhập để thích bài viết!");
+            return;
+        }
+
+        try{
+            await axios.post(
+                `http://localhost:8080/api/posts/${postId}/like`,
+                {}, //ko cần body
+                {headers: {'Authorization': `Bearer ${token}`}}
+            );
+            fetchPosts();
+            fetchMyLikes();
+        } catch (error){
+            console.error("Lỗi khi thích bài viết: ", error);
+            alert("Đã xảy ra lỗi khi tương tác với bài viết");
+        }
+    }
+
     //giao diện
     return(
         // Thêm className cho container của HomePage
@@ -94,18 +140,30 @@ export function HomePage() {
             <div className="post-list-container">
                 <h3>Dòng thời gian</h3>
                 {/*Lặp (MAP) qua danh sách post trong STATE*/}
-                {posts.slice().reverse().map(post => (
-                  // "key={post.id} là bắt buộc, để React biết phân biệt"
-                  // Thay thế inline style bằng className
-                  <div key={post.id} className="post-card">
-                    {/* Thêm className cho header của post */}
-                    <div className="post-header">
-                        <strong>{post.user ? post.user.name: 'User (ID: ${post.user_id})'}</strong>
+                {posts.slice().reverse().map(post => {
+                    //Tra cứu liked post, kiểm tra xem myLikedPosts có chứa id này ko
+                    const isLikedByMe = myLikedPosts.has(post.id);
+                    return (
+                    // "key={post.id} là bắt buộc, để React biết phân biệt"
+                    <div key={post.id} className="post-card">
+                        <div className="post-header">
+                            <strong>{post.user ? post.user.name : `User (ID: ${post.user_id})`}</strong>
+                        </div>
+                        <p className="post-content">{post.content}</p>
+
+                        <div className="post-actions">
+                            <button
+                                onClick={() => handleLikeToggle(post.id)}
+                                className={isLikedByMe ? 'like-button liked' : 'like-button'}
+                            >
+                                {/* {isLikedByMe ? <FaHeart /> : <FaRegHeart />} */}
+                                {isLikedByMe ? <Heart /> : <HeartOutline />}
+                            </button>
+                            <span className="like-count">{post.likeCount}</span>
+                        </div>
                     </div>
-                    {/* Thêm className cho nội dung post */}
-                    <p className="post-content">{post.content}</p>
-                  </div>
-                ))}
+                    );
+                })}
             </div>
         </div>
     ); 

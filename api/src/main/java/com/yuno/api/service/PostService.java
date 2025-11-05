@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import com.yuno.api.model.User;
 import org.springframework.stereotype.Service;
-import com.yuno.api.ApiApplication;
 import com.yuno.api.dto.PostResponse;
 import com.yuno.api.dto.UserResponse;
 import com.yuno.api.model.Post;
+import com.yuno.api.repository.LikeRepository;
 import com.yuno.api.repository.PostRepository;
 import com.yuno.api.repository.UserRepository;
 
@@ -16,10 +16,12 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final LikeRepository likeRepository;
 
-    public PostService(PostRepository postRepository, UserRepository userRepository, ApiApplication apiApplication){
+    public PostService(PostRepository postRepository, UserRepository userRepository, LikeRepository likeRepository){
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.likeRepository = likeRepository;
     }
 
     public List<PostResponse> getAllPosts(){
@@ -45,10 +47,13 @@ public class PostService {
         postResponse.setContent(post.getContent());
         postResponse.setUser(userResponse);
 
+        int likeCount = likeRepository.countByPost_id(post.getId());
+        postResponse.setLikeCount(likeCount);
+
         return postResponse;
     }
 
-    public Post createPost(String content, String username){
+    public PostResponse createPost(String content, String username){
         //Dùng username lấy từ token để tìm User
         User user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
@@ -58,7 +63,23 @@ public class PostService {
         newPost.setContent(content);
         //Gắn user_id vào bài post
         newPost.setUser_id(user.getId());
+        //Save cái khuôn trước
+        Post savedPost = postRepository.save(newPost);
+
+        //tạo túi con (UserResponse)
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(user.getId());
+        userResponse.setUsername(user.getUsername());
+        userResponse.setName(user.getName());
+
+        //tạo túi chính (PostResponse)
+        PostResponse postResponse = new PostResponse();
+        postResponse.setId(savedPost.getId());
+        postResponse.setContent(savedPost.getContent());
+        postResponse.setUser(userResponse); //gắn túi con
+        postResponse.setLikeCount(0);
+
         //Lưu bài post (đã có chủ) xuống CSDL
-        return postRepository.save(newPost);
+        return postResponse;
     }
 }

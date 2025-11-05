@@ -7,4 +7,5 @@ public class PostResponse {
     private int id;
     private String content;
     private UserResponse user;
+    private int likeCount;
 }

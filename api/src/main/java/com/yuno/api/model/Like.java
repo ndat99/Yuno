@@ -17,14 +17,12 @@ public class Like {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     
-    @JoinColumn(name="post_id")
     private int post_id;
 
     @ManyToOne
     @JoinColumn(name="post_id", insertable = false, updatable = false)
     private Post post;
 
-    @JoinColumn(name="user_id")
     private int user_id;
 
     @ManyToOne
