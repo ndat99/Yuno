@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.yuno.api.dto.PostResponse;
 import com.yuno.api.dto.UserResponse;
 import com.yuno.api.model.Post;
+import com.yuno.api.repository.CommentRepository;
 import com.yuno.api.repository.LikeRepository;
 import com.yuno.api.repository.PostRepository;
 import com.yuno.api.repository.UserRepository;
@@ -17,11 +18,13 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
+    private final CommentRepository commentRepository;
 
-    public PostService(PostRepository postRepository, UserRepository userRepository, LikeRepository likeRepository){
+    public PostService(PostRepository postRepository, UserRepository userRepository, LikeRepository likeRepository, CommentRepository commentRepository){
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.likeRepository = likeRepository;
+        this.commentRepository = commentRepository;
     }
 
     public List<PostResponse> getAllPosts(){
@@ -49,6 +52,9 @@ public class PostService {
 
         int likeCount = likeRepository.countByPost_id(post.getId());
         postResponse.setLikeCount(likeCount);
+
+        int commentCount = commentRepository.countByPost_id(post.getId());
+        postResponse.setCommentCount(commentCount);
 
         return postResponse;
     }

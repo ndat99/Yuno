@@ -318,12 +318,18 @@ textarea {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  margin-bottom: 24px;
+  align-items: flex-end;
 }
 
 .create-post-form textarea {
+  flex-grow: 1; /* "Chiếm" (Take) hết chỗ */
   margin-bottom: 0;
-  border-radius: 12px;
-  font-size: 15px;
+  min-height: 44px; /* "Cao" (Height) ban đầu "bằng" (equal) nút */
+  height: auto; /* "Tự động" (Auto) "điều chỉnh" (adjust) */
+  max-height: 200px; /* "Giới hạn" (Limit) "tối đa" (max) */
+  resize: none;
+  overflow: hidden ;
 }
 
 .divider {
@@ -432,6 +438,7 @@ textarea {
   gap: 8px; /* Khoảng cách giữa "tim" và "số" */
 }
 
+/*LIKE-BUTTON*/
 .like-button {
   background: none;
   border: none;
@@ -460,6 +467,111 @@ textarea {
   font-size: 0.9em;
   font-weight: 500;
   color: #555;
+}
+
+/*COMMENT-BUTTON*/
+.comment-button {
+  background: none;
+  border: none;
+  font-size: 1.3em; /* Icon nhỏ hơn "tim" 1 tí */
+  color: #555;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 15px; /* Đẩy nó ra xa nút "Like" */
+  transition: all 0.2s;
+}
+.comment-button:hover {
+  color: #73ba89; /* Đổi màu xanh khi "hơ" (hover) */
+  transform: scale(1.1);
+}
+
+.comment-count {
+  font-size: 0.9em;
+  font-weight: 500;
+  color: #555;
+}
+/*COMMENT-SECTIONS*/
+.comment-section {
+  margin-top: 20px;
+  border-top: 2px solid rgba(74, 103, 83, 0.1); /* "Giống" (Match) cái .divider */
+  padding-top: 24px;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.comment-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  align-items: flex-start; /* "Căn" (Align) "đầu" (top) (cho "mượt" (smooth)) */
+}
+
+.comment-form textarea {
+  flex-grow: 1; /* "Chiếm" (Take) hết chỗ */
+  margin-bottom: 0;
+  min-height: 44px; /* "Cao" (Height) ban đầu "bằng" (equal) nút */
+  height: auto; /* "Tự động" (Auto) "điều chỉnh" (adjust) */
+  max-height: 200px; /* "Giới hạn" (Limit) "tối đa" (max) */
+  resize: none; /* "Tắt" (Disable) "kéo" (resize) "thủ công" (manual) */
+  overflow: hidden; /* "Ẩn" (Hide) "thanh cuộn" (scrollbar) */
+}
+
+/* "Nút" (Button) "Gửi" (Submit) (Icon MỚI) */
+.comment-submit-button {
+  flex-shrink: 0; /* "Không co" (No-shrink) */
+  width: 48px;  /* "Vuông" (Square) */
+  height: 48px; /* "Khớp" (Match) "chiều cao" (height) "tối thiểu" (min) của textarea */
+  border: none;
+  border-radius: 12px; /* "Khớp" (Match) "input" */
+  background: linear-gradient(135deg, #4A6753 0%, #5a9367 100%); /* "Màu" (Theme) Yuno */
+  color: white;
+  font-size: 16px; /* "Cỡ" (Size) icon */
+  cursor: pointer;
+  
+  /* "Căn" (Align) icon "vào giữa" (center) (quan trọng) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(74, 103, 83, 0.2);
+}
+.comment-submit-button:hover {
+  background: #3a5a40;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(74, 103, 83, 0.3);
+}
+.comment-submit-button:active {
+  transform: translateY(0);
+}
+
+/* "Danh sách" (List) Comment */
+.comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* "Khoảng cách" (Space) giữa các comment */
+}
+
+/* "Thẻ" (Card) Comment (Sửa "nền" (background)!) */
+.comment-card {
+  /* background-color: #F9F6F2; (CŨ: "Vô hình") */
+  background-color: #ffffff; /* MỚI: "Nền" (Background) "trắng" (white) (giống .post-card) */
+  border-radius: 12px; /* "Bo góc" (Softer radius) */
+  padding: 14px 18px;
+  border: 1px solid rgba(74, 103, 83, 0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+  animation: fadeIn 0.3s ease-out; /* "Hiệu ứng" (Fade-in) "mờ" (subtle) */
+}
+.comment-card strong {
+  font-size: 0.95em;
+  color: #3a5a40; /* "Xanh đậm" (Darker green) */
+  font-weight: 600;
+}
+.comment-card p {
+  font-size: 1em;
+  margin: 6px 0 0 0;
+  color: #4a5568; /* "Xám" (Gray) "chữ" (text) */
+  line-height: 1.5;
+  word-wrap: break-word;
 }
 
 /* Responsive Design */

@@ -8,4 +8,5 @@ public class PostResponse {
     private String content;
     private UserResponse user;
     private int likeCount;
+    private int commentCount;
 }

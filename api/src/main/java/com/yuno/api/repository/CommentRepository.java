@@ -9,4 +9,5 @@ import com.yuno.api.model.Comment;
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
 
     List<Comment> findAllByPost_id(int postId);
+    int countByPost_id(int post);
 }

@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { FaRegHeart, FaHeart } from "react-icons/fa";
+import { FaRegHeart, FaHeart, FaRegComment } from "react-icons/fa";
+import { CommentSection } from "../components/CommentSection";
 
 const Heart = FaHeart as React.ElementType;
 const HeartOutline = FaRegHeart as React.ElementType;
+const Comment = FaRegComment as React.ElementType;
 
 //định nghĩa khuôn Interface cho Post
 interface Post{
@@ -16,6 +18,7 @@ interface Post{
         name: string;
     } | null;
     likeCount: number;
+    commentCount: number;
 }
 
 export function HomePage() {
@@ -25,6 +28,8 @@ export function HomePage() {
     const [content, setContent] =  useState("");
     //tạo STATE để lưu những bài đã like
     const [myLikedPosts, setMyLikedPosts] = useState<Set<number>>(new Set());
+    //tạo STATE để lưu những bài đã mở commment
+    const [openCommentSections, setOpenCommentSections] = useState<Set<number>>(new Set());
 
     //lấy ds post
     const fetchPosts = async () =>{
@@ -127,8 +132,13 @@ export function HomePage() {
                 <form className="create-post-form" onSubmit={handleSubmit}>
                     <textarea
                         value={content} placeholder="Bạn đang nghĩ gì?"
-                        onChange={(e) => setContent(e.target.value)}
-                    ></textarea>
+                        onChange={(e) => {
+                            setContent(e.target.value);
+                            e.target.style.height = 'auto';
+                            e.target.style.height = e.target.scrollHeight + 'px';
+                        }}
+                        rows={1}
+                        ></textarea>
                     {/* Thêm className cho nút "Đăng bài" */}
                     <input type="submit" value="Đăng bài" className="post-submit-button" />
                 </form>
@@ -160,7 +170,27 @@ export function HomePage() {
                                 {isLikedByMe ? <Heart /> : <HeartOutline />}
                             </button>
                             <span className="like-count">{post.likeCount}</span>
+                            <button className="comment-button"
+                            onClick={() => {
+                                const newSet = new Set(openCommentSections);
+                                if (newSet.has(post.id)){
+                                    //nếu đã có -> xóa nó đi (đóng)
+                                    newSet.delete(post.id);
+                                } else {
+                                    //nếu chưa có -> thêm nó vào (mở)
+                                    newSet.add(post.id);
+                                }
+                                //cập nhật bộ nhớ bằng bản sao mới
+                                setOpenCommentSections(newSet);
+                            }}
+                            >
+                                <Comment />
+                            </button>
+                            <span className="comment-count">{post.commentCount}</span>
                         </div>
+                       {openCommentSections.has(post.id) && (
+                            <CommentSection postId={post.id} />
+                        )} 
                     </div>
                     );
                 })}
