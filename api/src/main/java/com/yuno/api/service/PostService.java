@@ -88,4 +88,17 @@ public class PostService {
         //Lưu bài post (đã có chủ) xuống CSDL
         return postResponse;
     }
+
+    public void deletePost(int postId, String username){
+        User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng "+ username));
+            
+        Post post = postRepository.findById(postId)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy bài viết "+ postId));
+
+        if (user.getId() != post.getUser_id()){
+            throw new RuntimeException("Bạn không có quyền xóa bài viết này!");
+        }
+        postRepository.delete(post);
+    }
 }

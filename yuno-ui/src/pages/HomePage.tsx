@@ -2,10 +2,13 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { FaRegHeart, FaHeart, FaRegComment } from "react-icons/fa";
 import { CommentSection } from "../components/CommentSection";
+import { FaTrash } from "react-icons/fa"
+import { jwtDecode } from "jwt-decode";
 
 const Heart = FaHeart as React.ElementType;
 const HeartOutline = FaRegHeart as React.ElementType;
 const Comment = FaRegComment as React.ElementType;
+const Delete = FaTrash as React.ElementType;
 
 //định nghĩa khuôn Interface cho Post
 interface Post{
@@ -121,6 +124,31 @@ export function HomePage() {
         }
     }
 
+    const handleDeletePost = async (postId: number) => {
+        if (!window.confirm("Bạn có chắc chắn muốn xóa bài viết này không?")){
+            return;
+        }
+        const token = localStorage.getItem("token");
+        if (!token){
+            alert("Bạn cần đăng nhập để xóa!");
+            return;
+        }
+        try{
+            await axios.delete(
+                `http://localhost:8080/api/posts/${postId}`,
+                {headers: {'Authorization': `Bearer ${token}`}}
+            );
+            fetchPosts();
+        } catch (error: any){
+            console.error("Lỗi khi xóa bài: ", error);
+            if (error.response && error.response.status === 400){
+                alert(error.response.data);
+            } else {
+                alert("Xóa bài viết thất bại!");
+            }
+        }
+    }
+
     //giao diện
     return(
         // Thêm className cho container của HomePage
@@ -153,11 +181,27 @@ export function HomePage() {
                 {posts.slice().reverse().map(post => {
                     //Tra cứu liked post, kiểm tra xem myLikedPosts có chứa id này ko
                     const isLikedByMe = myLikedPosts.has(post.id);
+                    //Tra cứu user đang đăng nhập, check xem có phải owner không
+                    const token = localStorage.getItem("token");
+                    let currentUsername: string | null = null;
+                    if (token){
+                        currentUsername = jwtDecode(token).sub || null;
+                    }
+                    //Check xem post này có user ko, và username của user đó có khớp với currentUsername ko
+                    const isOwner = post.user && post.user.username === currentUsername;
                     return (
                     // "key={post.id} là bắt buộc, để React biết phân biệt"
                     <div key={post.id} className="post-card">
                         <div className="post-header">
                             <strong>{post.user ? post.user.name : `User (ID: ${post.user_id})`}</strong>
+                            {isOwner && (
+                                <button onClick={() =>handleDeletePost(post.id)}
+                                        className="delete-button"
+                                        title="Xóa bài viết"
+                                >
+                                    <Delete/>
+                                </button>
+                            )}
                         </div>
                         <p className="post-content">{post.content}</p>
 

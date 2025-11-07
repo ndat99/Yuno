@@ -26,7 +26,7 @@ export function Navbar({token, setToken}: {token: string | null; setToken: (toke
             <div className="navbar-logo">
                 <Link to="/">
                     {/* Thêm className cho logo để CSS nhận */}
-                    <img src="/logo.png" alt="Yuno Logo" className="logo-image" />
+                    <img src="/logoExpand.png" alt="Yuno Logo" className="logo-image" />
                 </Link>
             </div>
 

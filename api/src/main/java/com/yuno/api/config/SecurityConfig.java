@@ -42,7 +42,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/posts").authenticated() //rule 5: phải có token mới cho POST posts
                 .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll() //rule 6: ai cũng đọc (GET) được comment
                 .requestMatchers(HttpMethod.POST, "/api/comments").authenticated()//rule 7: phải có token mới được POST comments
-                .anyRequest().authenticated() //rule 8: mọi yêu cầu khác đều phải xác thực (đăng nhập)
+                .requestMatchers(HttpMethod.DELETE, "/api/posts/**").authenticated()//rule 8: phải có token mới được DELETE post
+                .anyRequest().authenticated() //rule 9: mọi yêu cầu khác đều phải xác thực (đăng nhập)
         )
         .authenticationProvider(authenticationProvider()) //cài hệ thống xác thực vào
         //cài người soát vé Jwt Filter vào dây chuyền vào trước cái Filter mặc định (UsernamePasswordAuthenticationFilter)
