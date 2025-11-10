@@ -3,28 +3,33 @@ import axios from "axios";
 import { FaRegHeart, FaHeart, FaRegComment } from "react-icons/fa";
 import { CommentSection } from "../components/CommentSection";
 import { FaTrash } from "react-icons/fa"
-import { jwtDecode } from "jwt-decode";
 
 const Heart = FaHeart as React.ElementType;
 const HeartOutline = FaRegHeart as React.ElementType;
 const Comment = FaRegComment as React.ElementType;
 const Delete = FaTrash as React.ElementType;
 
+interface AuthUser{
+    id: number;
+    name: string;
+    username: string;
+}
+
 //định nghĩa khuôn Interface cho Post
 interface Post{
     id: number;
     content: string;
     user_id: number;
-    user: {
-        id: number;
-        username: string;
-        name: string;
-    } | null;
+    user: AuthUser | null;
     likeCount: number;
     commentCount: number;
 }
 
-export function HomePage() {
+interface HomePageProps{
+    authUser: AuthUser | null;
+}
+
+export function HomePage({authUser} : HomePageProps) {
     //tạo STATE để lưu ds bài đăng, ban đầu là rỗng []
     const [posts, setPosts] = useState<Post[]>([]);
     //tạo STATE để lưu nội dung bài đăng mới
@@ -155,22 +160,23 @@ export function HomePage() {
         <div className="homepage-container">
             
             {/* Đổi tên className cho "xịn" */}
-            <div className="create-post-container">
-                <h3>Tạo bài đăng mới</h3>
-                <form className="create-post-form" onSubmit={handleSubmit}>
-                    <textarea
-                        value={content} placeholder="Bạn đang nghĩ gì?"
-                        onChange={(e) => {
-                            setContent(e.target.value);
-                            e.target.style.height = 'auto';
-                            e.target.style.height = e.target.scrollHeight + 'px';
-                        }}
-                        rows={1}
-                        ></textarea>
-                    {/* Thêm className cho nút "Đăng bài" */}
-                    <input type="submit" value="Đăng bài" className="post-submit-button" />
-                </form>
-            </div>
+            {authUser && (
+                <div className="create-post-container">
+                    <h3>Tạo bài đăng mới</h3>
+                    <form className="create-post-form" onSubmit={handleSubmit}>
+                        <textarea
+                            value={content} placeholder="Bạn đang nghĩ gì?"
+                            onChange={(e) => {
+                                setContent(e.target.value);
+                                e.target.style.height = 'auto';
+                                e.target.style.height = e.target.scrollHeight + 'px';
+                            }}
+                            rows={1}
+                            ></textarea>
+                        <input type="submit" value="Đăng bài" className="post-submit-button" />
+                    </form>
+                </div>
+            )}
 
             {/* Thêm className cho đường kẻ ngang */}
             <hr className="divider" />
@@ -182,13 +188,8 @@ export function HomePage() {
                     //Tra cứu liked post, kiểm tra xem myLikedPosts có chứa id này ko
                     const isLikedByMe = myLikedPosts.has(post.id);
                     //Tra cứu user đang đăng nhập, check xem có phải owner không
-                    const token = localStorage.getItem("token");
-                    let currentUsername: string | null = null;
-                    if (token){
-                        currentUsername = jwtDecode(token).sub || null;
-                    }
-                    //Check xem post này có user ko, và username của user đó có khớp với currentUsername ko
-                    const isOwner = post.user && post.user.username === currentUsername;
+                    //Check xem có authUser ko và username của nó có khớp với username của chủ post ko
+                    const isOwner = authUser && post.user && authUser.username === post.user.username;
                     return (
                     // "key={post.id} là bắt buộc, để React biết phân biệt"
                     <div key={post.id} className="post-card">

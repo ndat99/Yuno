@@ -2,6 +2,7 @@ package com.yuno.api.service;
 
 import com.yuno.api.dto.AuthResponse;
 import com.yuno.api.dto.LoginRequest;
+import com.yuno.api.dto.UserResponse;
 import com.yuno.api.model.User;
 import com.yuno.api.repository.UserRepository;
 import com.yuno.api.security.JwtService;
@@ -57,7 +58,14 @@ public class AuthService {
         );
         //nếu ko lỗi thì tạo token
         String token = jwtService.generateToken((loginRequest.getUsername()));
-        return new AuthResponse(token);
+        User user = userRepository.findByUsername(loginRequest.getUsername())
+                    .orElseThrow(() -> new RuntimeException("Lỗi không xác định: Không tìm thấy user sau khi xác thực"));
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(user.getId());
+        userResponse.setUsername(user.getUsername());
+        userResponse.setName(user.getName());
+
+        return new AuthResponse(token, userResponse);
     }
 
 }

@@ -92,23 +92,50 @@ body {
 }
 
 .navbar-links .nav-button {
-  background: linear-gradient(135deg, #4A6753 0%, #5a9367 100%);
+  background: transparent;
   border: none;
-  color: #ffffff;
-  padding: 10px 24px;
-  border-radius: 10px;
+  color: #e74c3c;
+  padding: 8px 16px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 15px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(74, 103, 83, 0.25);
+  position: relative;
 }
+
+.navbar-links .nav-button::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #bf392b, #e74c3c);
+  transition: width 0.3s ease;
+}
+
 .navbar-links .nav-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(74, 103, 83, 0.35);
+  color: #bf392b;
+  background-color: rgba(74, 103, 83, 0.08);
 }
+
+.navbar-links .nav-button:hover::after {
+  width: 60%;
+}
+
 .navbar-links .nav-button:active {
-  transform: translateY(0);
+  transform: scale(0.98);
+}
+
+/*NAME*/
+.nav-username {
+  color: #3a5a40; /* "Xanh đậm" (Dark green) */
+  font-weight: 600;
+  font-size: 16px;
+  /* "Canh" (Align) "thẳng" (straight) "hàng" (line) "với" (with) "nút" (button) */
+  align-self: center; 
 }
 
 /* 3. "Bọc" nội dung chính (Căn giữa) */

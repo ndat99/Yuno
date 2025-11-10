@@ -3,7 +3,12 @@ import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
-export function LoginPage({setToken}: {setToken: (token: string | null) => void}) {
+interface AuthUser{
+    id: number;
+    name: string;
+    username: string;
+}
+export function LoginPage({onLoginSuccess}: {onLoginSuccess: (token: string, user: AuthUser) => void}) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     
@@ -25,8 +30,10 @@ export function LoginPage({setToken}: {setToken: (token: string | null) => void}
             );
             
             const token = response.data.token; //lấy token ra
-            localStorage.setItem("token", token); //bỏ vào "ví" của trình duyệt
-            setToken(token); //báo cho App.tsx biết
+            const user = response.data.user; //lấy userResponse ra
+
+            //gọi hàm login
+            onLoginSuccess(token, user);
             //để ko bị mất dl khi refresh trang
             navigate("/"); // (Sửa lỗi chính tả)
         } catch(error){

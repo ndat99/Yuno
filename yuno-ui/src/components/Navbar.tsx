@@ -1,21 +1,26 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { IoLogOutOutline } from 'react-icons/io5';
 
+const LogOut = IoLogOutOutline as React.ElementType;
+
+interface AuthUser{
+    id: number;
+    name: string;
+    username: string;
+}
+
+interface NavBarProps {
+    authUser: AuthUser | null; //nhận User hoặc null
+    onLogout: () => void; //nhận hàm đăng xuất
+}
 // Gắn className trực tiếp vào JSX
-export function Navbar({token, setToken}: {token: string | null; setToken: (token: string | null) => void}) {
+export function Navbar({authUser, onLogout}: NavBarProps) {
 
-    const navigate = useNavigate(); //điều khiển
     const location = useLocation() //để dò xem đang ở trang nào
 
-    const isLoggedIn = token != null; //true nếu đã đăng nhập
+    const isLoggedIn = authUser != null; //true nếu đã đăng nhập
     //true nếu đang ở trang Login hoặc Register
     const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
-
-    //đăng xuất
-    const handleLogout = () => {
-        localStorage.removeItem("token"); //vứt token khỏi localStorage
-        setToken(null); //báo cho App.tsx biết
-        navigate("/"); //chuyển về trang chủ
-    }
 
     // (Không cần các const style ở đây nữa)
 
@@ -38,7 +43,14 @@ export function Navbar({token, setToken}: {token: string | null; setToken: (toke
 
                     {/*nếu ko ở trạng thái Auth và đã đăng nhập*/}
                     {!isAuthPage && isLoggedIn && (
-                        <li><button onClick={handleLogout} className="nav-button">Đăng xuất</button></li>
+                        <>
+                            <li className="nav-username">{authUser.name}</li>
+                            <li>
+                                <button onClick={onLogout} className="nav-button" title="Đăng xuất">
+                                    <LogOut size={25} />
+                                </button>
+                            </li>
+                        </>
                     )}
                     {/*nếu ko ở trạng thái Auth và chưa đăng nhập*/}
                     {!isAuthPage && !isLoggedIn &&(
